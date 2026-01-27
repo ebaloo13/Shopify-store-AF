@@ -1,0 +1,54 @@
+/**
+ * Theme Styles Entry Point
+ *
+ * Global styles for modern components.
+ * Uses CSS Custom Properties for theming - compatible with Shadow DOM.
+ * These styles complement (not replace) the existing theme CSS.
+ */
+
+// CSS Custom Properties for theming
+// These can be overridden by Shopify theme settings via Liquid
+:root {
+  // Modern component tokens
+  --modern-spacing-xs: 0.25rem;
+  --modern-spacing-sm: 0.5rem;
+  --modern-spacing-md: 1rem;
+  --modern-spacing-lg: 1.5rem;
+  --modern-spacing-xl: 2rem;
+
+  // Transition tokens
+  --modern-transition-fast: 150ms ease;
+  --modern-transition-base: 250ms ease;
+  --modern-transition-slow: 350ms ease;
+
+  // Border radius tokens
+  --modern-radius-sm: 0.25rem;
+  --modern-radius-md: 0.5rem;
+  --modern-radius-lg: 1rem;
+
+  // Shadow tokens
+  --modern-shadow-sm: 0 1px 2px rgb(0 0 0 / 5%);
+  --modern-shadow-md: 0 4px 6px rgb(0 0 0 / 10%);
+  --modern-shadow-lg: 0 10px 15px rgb(0 0 0 / 10%);
+}
+
+// Utility class for visually hidden content (accessibility)
+.modern-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Focus styles for modern components
+.modern-focus-visible {
+  &:focus-visible {
+    outline: 2px solid var(--color-focus, currentColor);
+    outline-offset: 2px;
+  }
+}

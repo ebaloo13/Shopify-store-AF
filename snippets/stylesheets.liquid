@@ -1,0 +1,7 @@
+{{ 'overflow-list.css' | asset_url | preload_tag: as: 'style' }}
+{{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
+
+{% comment %}
+  Note: Vite-compiled styles (theme.css) are loaded via vite-tag in scripts.liquid
+  This ensures proper HMR in development and avoids duplicate stylesheet loading.
+{% endcomment %}

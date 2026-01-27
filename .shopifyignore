@@ -1,0 +1,66 @@
+# .shopifyignore
+# Files and directories to exclude from Shopify theme uploads
+# This file is used by Shopify CLI (shopify theme push)
+
+# ======================
+# Node.js / Build tools
+# ======================
+node_modules/
+package.json
+package-lock.json
+tsconfig.json
+vite.config.js
+vitest.config.js
+
+# ======================
+# Vite source & cache
+# ======================
+frontend/
+.vite/
+
+# ======================
+# Tests
+# ======================
+test/
+
+# ======================
+# CI/CD & Git
+# ======================
+.github/
+.git/
+.gitignore
+
+# ======================
+# IDE & Editor configs
+# ======================
+.cursor/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ======================
+# Shopify config files
+# ======================
+.shopifyignore
+.theme-check.yml
+
+# ======================
+# Source maps & logs
+# ======================
+*.map
+*.log
+
+# ======================
+# Documentation
+# ======================
+*.md
+README*
+LICENSE*
+CHANGELOG*
+
+# ======================
+# OS generated files
+# ======================
+.DS_Store
+Thumbs.db

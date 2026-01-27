@@ -1,0 +1,12 @@
+# .theme-check.yml
+# Shopify Theme Check configuration
+# https://github.com/Shopify/theme-check
+
+# Ignore Vite-generated and build files
+ignore:
+  - node_modules/**
+  - frontend/**
+  - test/**
+  - assets/theme.js
+  - assets/theme.css
+  - assets/.vite/**
