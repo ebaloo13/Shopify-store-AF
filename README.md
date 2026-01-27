@@ -406,3 +406,5 @@ Ensure both Vite dev server (`npm run dev`) and Shopify CLI (`shopify theme dev`
 ## License
 
 Based on the [Shopify Horizon Theme](https://github.com/Shopify/horizon).
+#   S h o p i f y - d e v - c u r s  
+ 
