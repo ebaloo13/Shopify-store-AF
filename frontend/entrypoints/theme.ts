@@ -12,7 +12,3 @@ import './theme.scss';
 // Each component self-registers its custom element when imported
 import '@components/product-card';
 
-// Log initialization in development
-if (import.meta.env.DEV) {
-  console.log('[Horizon Theme] Modern frontend initialized');
-}

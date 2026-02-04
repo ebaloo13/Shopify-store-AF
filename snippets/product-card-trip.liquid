@@ -1,0 +1,63 @@
+{%- doc -%}
+  Trip product card
+
+  Renders a product card designed for trip/tour products with a large image
+  and content section below showing title, type, location, duration, and description.
+
+  @param {object} product - Product object (required)
+
+  @example
+    {% render 'product-card-trip', product: product %}
+{%- enddoc -%}
+
+{% if product != blank %}
+  {% liquid
+    assign variant = product.selected_or_first_available_variant
+    assign can_add_to_cart = false
+    if variant.available
+      assign can_add_to_cart = true
+    endif
+  %}
+  <a href="{{ product.url }}" class="trip-card">
+    <div class="trip-card__image">
+      {% if product.featured_image %}
+        {{ product.featured_image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'trip-card__img', alt: product.title }}
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag: 'trip-card__placeholder' }}
+      {% endif %}
+    </div>
+    <div class="trip-card__content">
+      <h3 class="trip-card__title">{{ product.title }}</h3>
+      {% if product.type != blank %}
+        <p class="trip-card__type">{{ product.type }}</p>
+      {% endif %}
+      <p class="trip-card__meta">
+        {% if product.vendor != blank %}
+          <span class="trip-card__location">{{ product.vendor }}</span>
+        {% endif %}
+        {% if product.metafields.custom.duration != blank %}
+          <span class="trip-card__duration">{{ product.metafields.custom.duration }}</span>
+        {% endif %}
+      </p>
+      {% if product.description != blank %}
+        <p class="trip-card__description">{{ product.description | strip_html | truncate: 80 }}</p>
+      {% endif %}
+    </div>
+  </a>
+{% else %}
+  <!-- Placeholder for onboarding/preview -->
+  <a href="#" class="trip-card trip-card--placeholder">
+    <div class="trip-card__image">
+      {{ 'product-1' | placeholder_svg_tag: 'trip-card__placeholder' }}
+    </div>
+    <div class="trip-card__content">
+      <h3 class="trip-card__title">Tour Name</h3>
+      <p class="trip-card__type">E-MTB</p>
+      <p class="trip-card__meta">
+        <span class="trip-card__location">Location</span>
+        <span class="trip-card__duration">7 days / 6 nights</span>
+      </p>
+      <p class="trip-card__description">A brief description of this amazing trip experience.</p>
+    </div>
+  </a>
+{% endif %}
