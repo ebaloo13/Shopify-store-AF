@@ -292,6 +292,10 @@
     "copyright": "Copyright",
     "count": "Count",
     "custom_section": "Custom section",
+    "custom_trips_hero": "Custom Trips Hero",
+    "custom_trips_paths": "Custom Trips Paths",
+    "custom_trips_form": "Custom Trip Form",
+    "custom_trips_faq": "Custom Trips FAQ",
     "description": "Description",
     // Block name for informational content containers
     "details": "Details",

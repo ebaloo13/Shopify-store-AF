@@ -1,0 +1,1083 @@
+{% liquid
+  comment
+    Collect blocks by type for rendering in appropriate form sections.
+  endcomment
+  assign event_blocks = ''
+  assign destination_blocks = ''
+  assign package_blocks = ''
+  assign extra_blocks = ''
+  assign has_events = false
+  assign has_destinations = false
+  assign has_packages = false
+  assign has_extras = false
+
+  for block in section.blocks
+    case block.type
+      when 'event'
+        assign has_events = true
+      when 'destination'
+        assign has_destinations = true
+      when 'package'
+        assign has_packages = true
+      when 'extra'
+        assign has_extras = true
+    endcase
+  endfor
+
+  assign form_id = 'CustomTripForm-' | append: section.id
+  assign accent_color = section.settings.accent_color | default: '#2563eb'
+  assign accent_r = accent_color | color_extract: 'red'
+  assign accent_g = accent_color | color_extract: 'green'
+  assign accent_b = accent_color | color_extract: 'blue'
+%}
+
+<section
+  id="custom-trip-form"
+  class="ct-form color-{{ section.settings.color_scheme }}"
+  tabindex="-1"
+  style="
+    --ct-form-padding-top: {{ section.settings.padding_top | default: 48 }}px;
+    --ct-form-padding-bottom: {{ section.settings.padding_bottom | default: 48 }}px;
+    --ct-form-accent: {{ accent_color }};
+    --ct-form-accent-rgb: {{ accent_r }} {{ accent_g }} {{ accent_b }};
+  "
+>
+  <div class="ct-form__container">
+    {%- comment -%} Section header {%- endcomment -%}
+    {% if section.settings.heading != blank %}
+      <h2 class="ct-form__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    {% if section.settings.description != blank %}
+      <p class="ct-form__description">{{ section.settings.description }}</p>
+    {% endif %}
+
+    {%- comment -%} Contact form {%- endcomment -%}
+    {%- form 'contact', id: form_id, class: 'ct-form__form' -%}
+
+      {%- comment -%} Hidden subject field {%- endcomment -%}
+      <input type="hidden" name="contact[subject]" value="Custom Trip Request">
+
+      {%- comment -%} Success message {%- endcomment -%}
+      {%- if form.posted_successfully? -%}
+        <div class="ct-form__success" role="alert" aria-live="polite">
+          <h3 class="ct-form__success-heading" tabindex="-1">
+            {{ section.settings.success_message | default: "Thanks! We'll be in touch within 24 hours." }}
+          </h3>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Error message {%- endcomment -%}
+      {%- if form.errors -%}
+        <div class="ct-form__error" role="alert" aria-live="assertive" tabindex="-1" autofocus>
+          <h3 class="ct-form__error-heading" tabindex="-1">Please correct the following:</h3>
+          <ul>
+            {% for field in form.errors %}
+              <li>{{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%}
+        =====================================================
+        STEP 1: Request Type Selector (always visible)
+        =====================================================
+      {%- endcomment -%}
+      <fieldset class="ct-form__fieldset ct-form__type-selector">
+        <legend class="ct-form__legend">What would you like to do?</legend>
+        <div class="ct-form__radio-cards">
+          <label for="ct-path-scratch" class="ct-form__radio-card">
+            <input
+              type="radio"
+              id="ct-path-scratch"
+              name="contact[request_type]"
+              value="{{ section.settings.scratch_label | default: 'Build from Scratch' }}"
+              class="ct-form__radio-input"
+              aria-required="true"
+            >
+            <span class="ct-form__radio-card-content">
+              <span class="ct-form__radio-card-title">{{ section.settings.scratch_label | default: 'Build from Scratch' }}</span>
+              <span class="ct-form__radio-card-desc">Choose events, destinations &amp; dates from scratch</span>
+            </span>
+          </label>
+
+          <label for="ct-path-customize" class="ct-form__radio-card">
+            <input
+              type="radio"
+              id="ct-path-customize"
+              name="contact[request_type]"
+              value="{{ section.settings.customize_label | default: 'Customize a Package' }}"
+              class="ct-form__radio-input"
+            >
+            <span class="ct-form__radio-card-content">
+              <span class="ct-form__radio-card-title">{{ section.settings.customize_label | default: 'Customize a Package' }}</span>
+              <span class="ct-form__radio-card-desc">Modify one of our existing trip packages</span>
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      {%- comment -%}
+        =====================================================
+        PATH A: Build from Scratch fields
+        =====================================================
+      {%- endcomment -%}
+      <div class="ct-form__scratch-fields">
+        {%- comment -%} Events checkboxes {%- endcomment -%}
+        {% if has_events %}
+          <fieldset class="ct-form__fieldset">
+            <legend class="ct-form__legend">Which events interest you?</legend>
+            <div class="ct-form__checkbox-grid">
+              {% for block in section.blocks %}
+                {% if block.type == 'event' %}
+                  <label class="ct-form__checkbox-label" {{ block.shopify_attributes }}>
+                    <input
+                      type="checkbox"
+                      name="contact[events]"
+                      value="{{ block.settings.name | escape }}"
+                      class="ct-form__checkbox"
+                    >
+                    <span class="ct-form__checkbox-text">
+                      {{ block.settings.name }}
+                      {% if block.settings.date_hint != blank %}
+                        <span class="ct-form__checkbox-hint">{{ block.settings.date_hint }}</span>
+                      {% endif %}
+                    </span>
+                  </label>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </fieldset>
+        {% endif %}
+
+        {%- comment -%} Destinations checkboxes {%- endcomment -%}
+        {% if has_destinations %}
+          <fieldset class="ct-form__fieldset">
+            <legend class="ct-form__legend">Preferred destinations</legend>
+            <div class="ct-form__checkbox-grid">
+              {% for block in section.blocks %}
+                {% if block.type == 'destination' %}
+                  <label class="ct-form__checkbox-label" {{ block.shopify_attributes }}>
+                    <input
+                      type="checkbox"
+                      name="contact[destinations]"
+                      value="{{ block.settings.name | escape }}"
+                      class="ct-form__checkbox"
+                    >
+                    <span class="ct-form__checkbox-text">
+                      {{ block.settings.name }}
+                      {% if block.settings.region != blank %}
+                        <span class="ct-form__checkbox-hint">{{ block.settings.region }}</span>
+                      {% endif %}
+                    </span>
+                  </label>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </fieldset>
+        {% endif %}
+
+        {%- comment -%} Preferred dates (free text) {%- endcomment -%}
+        <div class="ct-form__field">
+          <label for="ct-scratch-dates" class="ct-form__label">Preferred Dates</label>
+          <input
+            type="text"
+            id="ct-scratch-dates"
+            name="contact[preferred_dates]"
+            class="ct-form__input"
+            placeholder="e.g. Late June 2026, flexible on exact dates"
+            autocomplete="off"
+          >
+        </div>
+      </div>
+
+      {%- comment -%}
+        =====================================================
+        PATH B: Customize a Package fields
+        =====================================================
+      {%- endcomment -%}
+      <div class="ct-form__customize-fields">
+        {%- comment -%} Package select from collection {%- endcomment -%}
+        {% if section.settings.packages_collection != blank and section.settings.packages_collection.products.size > 0 %}
+          <div class="ct-form__field">
+            <label for="ct-package-select" class="ct-form__label">Base Package</label>
+            <select id="ct-package-select" name="contact[base_package]" class="ct-form__select">
+              <option value="">Select a package...</option>
+              {% for product in section.settings.packages_collection.products %}
+                <option value="{{ product.title | escape }}">
+                  {{ product.title }}
+                  {%- if product.price > 0 %} (From {{ product.price | money }}){% endif -%}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {% elsif has_packages %}
+          {%- comment -%} Fallback to blocks if no collection selected {%- endcomment -%}
+          <div class="ct-form__field">
+            <label for="ct-package-select" class="ct-form__label">Base Package</label>
+            <select id="ct-package-select" name="contact[base_package]" class="ct-form__select">
+              <option value="">Select a package...</option>
+              {% for block in section.blocks %}
+                {% if block.type == 'package' %}
+                  <option value="{{ block.settings.name | escape }}" {{ block.shopify_attributes }}>
+                    {{ block.settings.name }}
+                    {%- if block.settings.description != blank %} — {{ block.settings.description }}{% endif -%}
+                    {%- if block.settings.price_hint != blank %} ({{ block.settings.price_hint }}){% endif -%}
+                  </option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+
+        {%- comment -%} Customization type checkboxes {%- endcomment -%}
+        <fieldset class="ct-form__fieldset">
+          <legend class="ct-form__legend">What would you like to change?</legend>
+          <div class="ct-form__checkbox-grid">
+            <label class="ct-form__checkbox-label">
+              <input type="checkbox" name="contact[customization]" value="Extend duration" class="ct-form__checkbox">
+              <span class="ct-form__checkbox-text">Extend duration</span>
+            </label>
+            <label class="ct-form__checkbox-label">
+              <input type="checkbox" name="contact[customization]" value="Shorten duration" class="ct-form__checkbox">
+              <span class="ct-form__checkbox-text">Shorten duration</span>
+            </label>
+            <label class="ct-form__checkbox-label">
+              <input type="checkbox" name="contact[customization]" value="Add destinations" class="ct-form__checkbox">
+              <span class="ct-form__checkbox-text">Add destinations</span>
+            </label>
+            <label class="ct-form__checkbox-label">
+              <input type="checkbox" name="contact[customization]" value="Change dates" class="ct-form__checkbox">
+              <span class="ct-form__checkbox-text">Change dates</span>
+            </label>
+            <label class="ct-form__checkbox-label">
+              <input type="checkbox" name="contact[customization]" value="Other" class="ct-form__checkbox">
+              <span class="ct-form__checkbox-text">Other</span>
+            </label>
+          </div>
+        </fieldset>
+
+        {%- comment -%} Preferred dates (free text) {%- endcomment -%}
+        <div class="ct-form__field">
+          <label for="ct-customize-dates" class="ct-form__label">Preferred Dates</label>
+          <input
+            type="text"
+            id="ct-customize-dates"
+            name="contact[preferred_dates]"
+            class="ct-form__input"
+            placeholder="e.g. First two weeks of July 2026"
+            autocomplete="off"
+          >
+        </div>
+      </div>
+
+      {%- comment -%}
+        =====================================================
+        SHARED FIELDS (visible once a path is selected)
+        =====================================================
+      {%- endcomment -%}
+      <div class="ct-form__shared-fields">
+
+        {%- comment -%} Trip details row {%- endcomment -%}
+        <fieldset class="ct-form__fieldset">
+          <legend class="ct-form__legend">Trip Details</legend>
+          <div class="ct-form__row">
+            <div class="ct-form__field">
+              <label for="ct-rider-level" class="ct-form__label">Rider Level</label>
+              <select id="ct-rider-level" name="contact[rider_level]" class="ct-form__select">
+                <option value="">Select level...</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+                <option value="Expert">Expert</option>
+                <option value="Mixed group">Mixed group</option>
+              </select>
+            </div>
+
+            <div class="ct-form__field">
+              <label for="ct-group-size" class="ct-form__label">Group Size</label>
+              <select id="ct-group-size" name="contact[group_size]" class="ct-form__select">
+                <option value="">Select size...</option>
+                <option value="Solo">Solo</option>
+                <option value="2">2 riders</option>
+                <option value="3-4">3-4 riders</option>
+                <option value="5-8">5-8 riders</option>
+                <option value="8+">8+ riders</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        {%- comment -%} Extras checkboxes {%- endcomment -%}
+        {% if has_extras %}
+          <fieldset class="ct-form__fieldset">
+            <legend class="ct-form__legend">Extras &amp; Add-ons</legend>
+            <div class="ct-form__checkbox-grid">
+              {% for block in section.blocks %}
+                {% if block.type == 'extra' %}
+                  <label class="ct-form__checkbox-label" {{ block.shopify_attributes }}>
+                    <input
+                      type="checkbox"
+                      name="contact[extras]"
+                      value="{{ block.settings.name | escape }}"
+                      class="ct-form__checkbox"
+                    >
+                    <span class="ct-form__checkbox-text">
+                      {{ block.settings.name }}
+                      {% if block.settings.description != blank %}
+                        <span class="ct-form__checkbox-hint">{{ block.settings.description }}</span>
+                      {% endif %}
+                    </span>
+                  </label>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </fieldset>
+        {% endif %}
+
+        {%- comment -%} Notes {%- endcomment -%}
+        <div class="ct-form__field">
+          <label for="ct-notes" class="ct-form__label">Additional Notes</label>
+          <textarea
+            id="ct-notes"
+            name="contact[body]"
+            class="ct-form__input ct-form__textarea"
+            rows="4"
+            placeholder="Tell us anything else — special requests, dietary needs, rest days, skill goals..."
+          >{{ form.body }}</textarea>
+        </div>
+
+        {%- comment -%} Contact info {%- endcomment -%}
+        <fieldset class="ct-form__fieldset">
+          <legend class="ct-form__legend">Your Contact Info</legend>
+          <div class="ct-form__row">
+            <div class="ct-form__field">
+              <label for="ct-name" class="ct-form__label">
+                Full Name <span class="ct-form__required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="ct-name"
+                name="contact[name]"
+                class="ct-form__input"
+                autocomplete="name"
+                required
+                aria-required="true"
+                value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+              >
+            </div>
+
+            <div class="ct-form__field">
+              <label for="ct-email" class="ct-form__label">
+                Email Address <span class="ct-form__required" aria-label="required">*</span>
+              </label>
+              <input
+                type="email"
+                id="ct-email"
+                name="contact[email]"
+                class="ct-form__input"
+                autocomplete="email"
+                required
+                aria-required="true"
+                spellcheck="false"
+                autocapitalize="off"
+                {% if form.errors contains 'email' %}
+                  aria-invalid="true"
+                  aria-describedby="ct-email-error"
+                {% endif %}
+                value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+              >
+              {% if form.errors contains 'email' %}
+                <span id="ct-email-error" class="ct-form__field-error" role="alert">
+                  {{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}
+                </span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="ct-form__row">
+            <div class="ct-form__field">
+              <label for="ct-phone" class="ct-form__label">WhatsApp / Phone</label>
+              <input
+                type="tel"
+                id="ct-phone"
+                name="contact[phone]"
+                class="ct-form__input"
+                autocomplete="tel"
+                placeholder="+1 555 123 4567"
+                value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+              >
+            </div>
+
+            <div class="ct-form__field">
+              <label for="ct-country" class="ct-form__label">Country</label>
+              <input
+                type="text"
+                id="ct-country"
+                name="contact[country]"
+                class="ct-form__input"
+                autocomplete="country-name"
+                placeholder="e.g. United States"
+              >
+            </div>
+
+            <div class="ct-form__field">
+              <label for="ct-timezone" class="ct-form__label">Timezone</label>
+              <select id="ct-timezone" name="contact[timezone]" class="ct-form__select">
+                <option value="">Select timezone...</option>
+                <option value="UTC-12">UTC-12 (Baker Island)</option>
+                <option value="UTC-10">UTC-10 (Hawaii)</option>
+                <option value="UTC-9">UTC-9 (Alaska)</option>
+                <option value="UTC-8">UTC-8 (Pacific)</option>
+                <option value="UTC-7">UTC-7 (Mountain)</option>
+                <option value="UTC-6">UTC-6 (Central)</option>
+                <option value="UTC-5">UTC-5 (Eastern)</option>
+                <option value="UTC-4">UTC-4 (Atlantic)</option>
+                <option value="UTC-3">UTC-3 (Argentina)</option>
+                <option value="UTC+0">UTC+0 (London)</option>
+                <option value="UTC+1">UTC+1 (Central Europe)</option>
+                <option value="UTC+2">UTC+2 (Eastern Europe)</option>
+                <option value="UTC+3">UTC+3 (Moscow)</option>
+                <option value="UTC+5:30">UTC+5:30 (India)</option>
+                <option value="UTC+8">UTC+8 (Singapore)</option>
+                <option value="UTC+9">UTC+9 (Japan)</option>
+                <option value="UTC+10">UTC+10 (Sydney)</option>
+                <option value="UTC+12">UTC+12 (New Zealand)</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        {%- comment -%} Submit {%- endcomment -%}
+        <div class="ct-form__submit-wrapper">
+          <button type="submit" class="button ct-form__submit">
+            {{ section.settings.submit_label | default: 'Send My Request' }}
+          </button>
+        </div>
+      </div>
+
+    {%- endform -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  /* =============================================================================
+     Custom Trip Form Section
+     ============================================================================= */
+  .ct-form {
+    padding-block-start: var(--ct-form-padding-top);
+    padding-block-end: var(--ct-form-padding-bottom);
+  }
+
+  .ct-form__container {
+    max-width: var(--normal-page-width);
+    margin-inline: auto;
+    padding-inline: var(--padding-2xl);
+  }
+
+  .ct-form__heading {
+    font-family: var(--font-heading--family);
+    font-style: var(--font-heading--style);
+    font-weight: var(--font-heading--weight);
+    font-size: var(--font-h2--size);
+    line-height: var(--font-h2--line-height);
+    letter-spacing: var(--font-h2--letter-spacing);
+    color: var(--color-foreground-heading);
+    margin: 0 0 var(--margin-sm);
+    text-align: center;
+  }
+
+  .ct-form__description {
+    font-family: var(--font-body--family);
+    font-size: var(--font-paragraph--size);
+    line-height: var(--font-paragraph--line-height);
+    color: var(--color-foreground-muted);
+    margin: 0 0 var(--margin-4xl);
+    text-align: center;
+    max-width: var(--normal-content-width);
+    margin-inline: auto;
+  }
+
+  /* Form layout */
+  .ct-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xl);
+    max-width: var(--wide-content-width);
+    margin-inline: auto;
+  }
+
+  /* Fieldsets and legends */
+  .ct-form__fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .ct-form__legend {
+    font-family: var(--font-heading--family);
+    font-size: var(--font-h4--size);
+    font-weight: var(--font-heading--weight);
+    line-height: var(--font-h4--line-height);
+    color: var(--color-foreground-heading);
+    margin-block-end: var(--margin-xs);
+    padding: 0;
+  }
+
+  /* =========================================================================
+     CSS :has() conditional display
+     - Anchor close to the form element for best performance
+     - Uses direct-child combinator where possible
+     ========================================================================= */
+  .ct-form__scratch-fields,
+  .ct-form__customize-fields,
+  .ct-form__shared-fields {
+    display: none;
+  }
+
+  .ct-form__form:has(> .ct-form__type-selector #ct-path-scratch:checked) .ct-form__scratch-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xl);
+  }
+
+  .ct-form__form:has(> .ct-form__type-selector #ct-path-customize:checked) .ct-form__customize-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xl);
+  }
+
+  .ct-form__form:has(> .ct-form__type-selector input[name="contact[request_type]"]:checked) .ct-form__shared-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xl);
+  }
+
+  /* Radio card selector */
+  .ct-form__radio-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap-lg);
+
+    @media screen and (min-width: 750px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .ct-form__radio-card {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gap-md);
+    padding: var(--padding-xl);
+    border: var(--style-border-width) solid var(--color-border);
+    border-radius: var(--style-border-radius-md);
+    background-color: var(--color-background);
+    cursor: pointer;
+    transition: border-color var(--animation-speed) var(--animation-easing),
+                box-shadow var(--animation-speed) var(--animation-easing);
+  }
+
+  .ct-form__radio-card:hover {
+    border-color: var(--ct-form-accent, var(--color-primary));
+  }
+
+  .ct-form__radio-card:has(> .ct-form__radio-input:checked) {
+    border-color: var(--ct-form-accent, var(--color-primary));
+    box-shadow: inset 0 0 0 1px var(--ct-form-accent, var(--color-primary));
+  }
+
+  .ct-form__radio-card:has(> .ct-form__radio-input:focus-visible) {
+    outline: var(--focus-outline-width) solid var(--color-foreground);
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  .ct-form__radio-input {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-block-start: 2px;
+    accent-color: var(--ct-form-accent, var(--color-primary));
+  }
+
+  .ct-form__radio-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xs);
+  }
+
+  .ct-form__radio-card-title {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: var(--font-size--lg);
+    color: var(--color-foreground-heading);
+  }
+
+  .ct-form__radio-card-desc {
+    font-family: var(--font-body--family);
+    font-size: var(--font-size--sm);
+    color: var(--color-foreground-muted);
+  }
+
+  /* Checkbox grid */
+  .ct-form__checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap-sm);
+
+    @media screen and (min-width: 750px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media screen and (min-width: 992px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .ct-form__checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gap-sm);
+    padding: var(--padding-md);
+    border: var(--style-border-width) solid var(--color-border);
+    border-radius: var(--style-border-radius-sm);
+    cursor: pointer;
+    transition: border-color var(--animation-speed) var(--animation-easing);
+  }
+
+  .ct-form__checkbox-label:hover {
+    border-color: var(--ct-form-accent, var(--color-primary));
+  }
+
+  .ct-form__checkbox-label:has(> .ct-form__checkbox:checked) {
+    border-color: var(--ct-form-accent, var(--color-primary));
+    background-color: rgb(var(--ct-form-accent-rgb, var(--color-primary-rgb)) / var(--opacity-5-15));
+  }
+
+  .ct-form__checkbox {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-block-start: 2px;
+    accent-color: var(--ct-form-accent, var(--color-primary));
+  }
+
+  .ct-form__checkbox-text {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-body--family);
+    font-size: var(--font-paragraph--size);
+    color: var(--color-foreground);
+    line-height: var(--font-paragraph--line-height);
+  }
+
+  .ct-form__checkbox-hint {
+    font-size: var(--font-size--xs);
+    color: var(--color-foreground-muted);
+  }
+
+  /* Field rows */
+  .ct-form__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap-lg);
+
+    @media screen and (min-width: 750px) {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+  }
+
+  /* Single field */
+  .ct-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xs);
+  }
+
+  .ct-form__label {
+    font-family: var(--font-body--family);
+    font-size: var(--font-size--sm);
+    font-weight: 500;
+    color: var(--color-foreground);
+  }
+
+  .ct-form__required {
+    color: var(--color-error);
+  }
+
+  .ct-form__input,
+  .ct-form__select {
+    width: 100%;
+    padding: var(--input-padding);
+    font-family: var(--font-body--family);
+    font-size: var(--font-paragraph--size);
+    color: var(--color-input-text);
+    background-color: var(--color-input-background);
+    border: var(--style-border-width-inputs) solid var(--color-input-border);
+    border-radius: var(--style-border-radius-inputs);
+    transition: border-color var(--animation-speed) var(--animation-easing);
+  }
+
+  .ct-form__input:focus-visible,
+  .ct-form__select:focus-visible {
+    outline: var(--focus-outline-width) solid var(--color-foreground);
+    outline-offset: var(--focus-outline-offset);
+    border-color: var(--color-foreground);
+  }
+
+  .ct-form__input[aria-invalid="true"] {
+    border-color: var(--color-error);
+  }
+
+  .ct-form__textarea {
+    resize: vertical;
+    min-height: var(--input-textarea-min-height);
+  }
+
+  .ct-form__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--padding-md) center;
+    padding-inline-end: var(--padding-3xl);
+  }
+
+  /* Field error */
+  .ct-form__field-error {
+    font-size: var(--font-size--sm);
+    color: var(--color-error);
+  }
+
+  /* Success / Error banners */
+  .ct-form__success {
+    padding: var(--padding-xl);
+    background-color: rgb(0 100 0 / 0.08);
+    border: var(--style-border-width) solid var(--color-success);
+    border-radius: var(--style-border-radius-sm);
+    color: var(--color-success);
+  }
+
+  .ct-form__success-heading {
+    font-family: var(--font-body--family);
+    font-size: var(--font-size--lg);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .ct-form__success-heading:focus {
+    outline: var(--focus-outline-width) solid var(--color-success);
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  .ct-form__error {
+    padding: var(--padding-xl);
+    background-color: rgb(139 0 0 / 0.08);
+    border: var(--style-border-width) solid var(--color-error);
+    border-radius: var(--style-border-radius-sm);
+    color: var(--color-error);
+  }
+
+  .ct-form__error-heading {
+    font-family: var(--font-body--family);
+    font-size: var(--font-size--lg);
+    font-weight: 600;
+    margin: 0 0 var(--margin-xs);
+  }
+
+  .ct-form__error-heading:focus {
+    outline: var(--focus-outline-width) solid var(--color-error);
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  .ct-form__error ul {
+    margin: 0;
+    padding-inline-start: var(--padding-xl);
+  }
+
+  /* Submit */
+  .ct-form__submit-wrapper {
+    display: flex;
+    justify-content: center;
+    padding-block-start: var(--padding-lg);
+  }
+
+  .ct-form__submit {
+    min-width: 200px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .ct-form__radio-card,
+    .ct-form__checkbox-label,
+    .ct-form__input,
+    .ct-form__select {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Custom Trip Form",
+  "tag": "section",
+  "class": "ct-form-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Form Heading",
+      "default": "Tell Us About Your Dream Trip"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Form Description"
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit Button Text",
+      "default": "Send My Request"
+    },
+    {
+      "type": "textarea",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "Thanks! We'll be in touch within 24 hours."
+    },
+    {
+      "type": "header",
+      "content": "Packages Collection"
+    },
+    {
+      "type": "collection",
+      "id": "packages_collection",
+      "label": "Packages Collection",
+      "info": "Select a collection to populate the Base Package dropdown. If empty, falls back to manual Package blocks."
+    },
+    {
+      "type": "header",
+      "content": "Path Labels"
+    },
+    {
+      "type": "text",
+      "id": "scratch_label",
+      "label": "Path A Label",
+      "default": "Build from Scratch"
+    },
+    {
+      "type": "text",
+      "id": "customize_label",
+      "label": "Path B Label",
+      "default": "Customize a Package"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#2563eb"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "event",
+      "name": "Event",
+      "limit": 20,
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Event Name",
+          "default": "Enduro World Series"
+        },
+        {
+          "type": "text",
+          "id": "date_hint",
+          "label": "Date Hint"
+        }
+      ]
+    },
+    {
+      "type": "destination",
+      "name": "Destination",
+      "limit": 20,
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Destination Name",
+          "default": "Whistler, BC"
+        },
+        {
+          "type": "text",
+          "id": "region",
+          "label": "Region"
+        }
+      ]
+    },
+    {
+      "type": "package",
+      "name": "Package",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Package Name",
+          "default": "Whistler Enduro Week"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Short Description",
+          "default": "7 days / 6 nights"
+        },
+        {
+          "type": "text",
+          "id": "price_hint",
+          "label": "Price Hint",
+          "default": "From $2,400"
+        }
+      ]
+    },
+    {
+      "type": "extra",
+      "name": "Extra Option",
+      "limit": 15,
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Extra Name",
+          "default": "Bike Rental"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Trip Form",
+      "settings": {
+        "heading": "Tell Us About Your Dream Trip",
+        "submit_label": "Send My Request",
+        "scratch_label": "Build from Scratch",
+        "customize_label": "Customize a Package",
+        "padding_top": 48,
+        "padding_bottom": 48
+      },
+      "blocks": [
+        {
+          "type": "event",
+          "settings": { "name": "Enduro World Series", "date_hint": "Multiple dates" }
+        },
+        {
+          "type": "event",
+          "settings": { "name": "Red Bull Rampage", "date_hint": "October 2026" }
+        },
+        {
+          "type": "event",
+          "settings": { "name": "Crankworx Whistler", "date_hint": "August 2026" }
+        },
+        {
+          "type": "destination",
+          "settings": { "name": "Whistler, BC", "region": "North America" }
+        },
+        {
+          "type": "destination",
+          "settings": { "name": "Moab, UT", "region": "North America" }
+        },
+        {
+          "type": "destination",
+          "settings": { "name": "Finale Ligure", "region": "Europe" }
+        },
+        {
+          "type": "package",
+          "settings": { "name": "Whistler Enduro Week", "description": "7 days / 6 nights", "price_hint": "From $2,400" }
+        },
+        {
+          "type": "package",
+          "settings": { "name": "Alps Traverse", "description": "10 days / 9 nights", "price_hint": "From $3,800" }
+        },
+        {
+          "type": "package",
+          "settings": { "name": "Moab Desert Ride", "description": "5 days / 4 nights", "price_hint": "From $1,600" }
+        },
+        {
+          "type": "extra",
+          "settings": { "name": "Bike Rental", "description": "Full-suspension enduro bike" }
+        },
+        {
+          "type": "extra",
+          "settings": { "name": "Guided Park Day", "description": "Full-day with certified guide" }
+        },
+        {
+          "type": "extra",
+          "settings": { "name": "Kids MTB School Day", "description": "Half-day skills clinic" }
+        },
+        {
+          "type": "extra",
+          "settings": { "name": "Lodging Upgrade", "description": "Premium hotel or cabin" }
+        },
+        {
+          "type": "extra",
+          "settings": { "name": "Airport Transfer", "description": "Round-trip shuttle" }
+        },
+        {
+          "type": "extra",
+          "settings": { "name": "Photography Package", "description": "Pro photos of your rides" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

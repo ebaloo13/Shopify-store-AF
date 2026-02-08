@@ -1,8 +1,8 @@
 {%- doc -%}
   Trip product card
 
-  Renders a product card designed for trip/tour products with a large image
-  and content section below showing title, type, location, duration, and description.
+  Renders a product card designed for trip/tour products with a large image,
+  hover-reveal add to cart button, and content section below.
 
   @param {object} product - Product object (required)
 
@@ -17,47 +17,217 @@
     if variant.available
       assign can_add_to_cart = true
     endif
+
+    # Calculate discount percentage
+    assign has_discount = false
+    assign discount_percent = 0
+    if variant.compare_at_price > variant.price
+      assign has_discount = true
+      assign price_diff = variant.compare_at_price | minus: variant.price
+      assign discount_percent = price_diff | times: 100 | divided_by: variant.compare_at_price
+    endif
   %}
-  <a href="{{ product.url }}" class="trip-card">
-    <div class="trip-card__image">
-      {% if product.featured_image %}
-        {{ product.featured_image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'trip-card__img', alt: product.title }}
-      {% else %}
-        {{ 'product-1' | placeholder_svg_tag: 'trip-card__placeholder' }}
+  <div class="trip-card">
+    <div class="trip-card__image-wrapper">
+      {%- comment -%} Discount badge on image (top-right like reference) {%- endcomment -%}
+      {% if has_discount %}
+        <span class="trip-card__badge">-{{ discount_percent }}%</span>
+      {% endif %}
+
+      <a href="{{ product.url }}" class="trip-card__image-link">
+        <div class="trip-card__image" style="position: relative; aspect-ratio: 4/5; overflow: hidden;">
+          {% if product.featured_image %}
+            <img
+              src="{{ product.featured_image | image_url: width: 800 }}"
+              srcset="{{ product.featured_image | image_url: width: 400 }} 400w,
+                      {{ product.featured_image | image_url: width: 600 }} 600w,
+                      {{ product.featured_image | image_url: width: 800 }} 800w"
+              sizes="(max-width: 749px) 100vw, 33vw"
+              alt="{{ product.title | escape }}"
+              loading="lazy"
+              class="trip-card__img"
+              style="display: block; width: 100%; height: 100%; object-fit: cover;"
+            >
+          {% else %}
+            {{ 'product-1' | placeholder_svg_tag: 'trip-card__placeholder' }}
+          {% endif %}
+        </div>
+      </a>
+
+      {%- comment -%} Small icon cart button on image (bottom-right) {%- endcomment -%}
+      {% if can_add_to_cart %}
+        {% assign product_form_id = 'TripCard-ProductForm-' | append: product.id %}
+        <product-form-component
+          data-section-id="{{ section.id }}"
+          data-product-id="{{ product.id }}"
+          on:submit="/handleSubmit"
+          class="trip-card__cart-form"
+        >
+          {%- form 'product', product, id: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+            <input type="hidden" name="id" ref="variantId" value="{{ variant.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="trip-card__cart-btn" aria-label="{{ 'actions.add_to_cart' | t | default: 'Add to cart' }}" ref="addToCartButton">
+              <span class="trip-card__btn-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                  <line x1="12" y1="9" x2="12" y2="15"></line>
+                  <line x1="9" y1="12" x2="15" y2="12"></line>
+                </svg>
+              </span>
+              <span class="trip-card__btn-loading" aria-hidden="true">...</span>
+              <span class="trip-card__btn-added" aria-hidden="true">✓</span>
+            </button>
+          {%- endform -%}
+        </product-form-component>
       {% endif %}
     </div>
     <div class="trip-card__content">
-      <h3 class="trip-card__title">{{ product.title }}</h3>
-      {% if product.type != blank %}
-        <p class="trip-card__type">{{ product.type }}</p>
-      {% endif %}
-      <p class="trip-card__meta">
-        {% if product.vendor != blank %}
-          <span class="trip-card__location">{{ product.vendor }}</span>
+      <h3 class="trip-card__title">
+        <a href="{{ product.url }}" class="trip-card__title-link">{{ product.title }}</a>
+      </h3>
+
+      {%- comment -%} Price with compare-at {%- endcomment -%}
+      <div class="trip-card__price" id="TripCard-Price-{{ product.id }}">
+        <span class="trip-card__price-current">{{ variant.price | money }}</span>
+        {% if has_discount %}
+          <s class="trip-card__price-compare">{{ variant.compare_at_price | money }}</s>
         {% endif %}
-        {% if product.metafields.custom.duration != blank %}
-          <span class="trip-card__duration">{{ product.metafields.custom.duration }}</span>
-        {% endif %}
-      </p>
-      {% if product.description != blank %}
-        <p class="trip-card__description">{{ product.description | strip_html | truncate: 80 }}</p>
+      </div>
+
+      <div class="trip-card__meta">
+        <div class="trip-card__meta-left">
+          {% if product.metafields.custom.laction != blank %}
+            <span class="trip-card__location">{{ product.metafields.custom.laction }}</span>
+          {% endif %}
+        </div>
+        <div class="trip-card__meta-right">
+          {% if product.metafields.custom.duration != blank %}
+            <span class="trip-card__duration">{{ product.metafields.custom.duration }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      {%- comment -%} Variant selector and quantity (below meta) {%- endcomment -%}
+      {% if can_add_to_cart %}
+        <div class="trip-card__options">
+          {%- comment -%} Variant selector (only if multiple variants) {%- endcomment -%}
+          {% unless product.has_only_default_variant %}
+            <div class="trip-card__variant-wrapper">
+              <label for="TripCard-Variant-{{ product.id }}" class="visually-hidden">{{ 'content.variant' | t | default: 'Variant' }}</label>
+              <select
+                id="TripCard-Variant-{{ product.id }}"
+                class="trip-card__variant-select"
+                onchange="(function(sel, productId) {
+                  var opt = sel.options[sel.selectedIndex];
+                  document.querySelector('#TripCard-ProductForm-' + productId + ' input[name=id]').value = sel.value;
+                  var priceEl = document.querySelector('#TripCard-Price-' + productId);
+                  var price = opt.dataset.price;
+                  var comparePrice = opt.dataset.comparePrice;
+                  var html = '<span class=\'trip-card__price-current\'>' + price + '</span>';
+                  if (comparePrice && comparePrice !== price) {
+                    html += ' <s class=\'trip-card__price-compare\'>' + comparePrice + '</s>';
+                  }
+                  priceEl.innerHTML = html;
+                })(this, '{{ product.id }}')"
+              >
+                {% for product_variant in product.variants %}
+                  <option
+                    value="{{ product_variant.id }}"
+                    data-price="{{ product_variant.price | money }}"
+                    data-compare-price="{% if product_variant.compare_at_price > product_variant.price %}{{ product_variant.compare_at_price | money }}{% endif %}"
+                    {% if product_variant == variant %}selected{% endif %}
+                    {% unless product_variant.available %}disabled{% endunless %}
+                  >
+                    {{ product_variant.title }}{% unless product_variant.available %} - {{ 'content.sold_out' | t | default: 'Sold out' }}{% endunless %}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endunless %}
+
+          {%- comment -%} Quantity selector {%- endcomment -%}
+          <div class="trip-card__quantity">
+            <button type="button" class="trip-card__qty-btn" aria-label="{{ 'accessibility.decrease_quantity' | t | default: 'Decrease quantity' }}" onclick="var inp=this.nextElementSibling; inp.stepDown(); document.querySelector('#TripCard-ProductForm-{{ product.id }} input[name=quantity]').value=inp.value">−</button>
+            <input
+              type="number"
+              value="1"
+              min="1"
+              class="trip-card__qty-input"
+              aria-label="{{ 'accessibility.quantity' | t | default: 'Quantity' }}"
+              onchange="document.querySelector('#TripCard-ProductForm-{{ product.id }} input[name=quantity]').value = this.value"
+            >
+            <button type="button" class="trip-card__qty-btn" aria-label="{{ 'accessibility.increase_quantity' | t | default: 'Increase quantity' }}" onclick="var inp=this.previousElementSibling; inp.stepUp(); document.querySelector('#TripCard-ProductForm-{{ product.id }} input[name=quantity]').value=inp.value">+</button>
+          </div>
+        </div>
       {% endif %}
     </div>
-  </a>
+  </div>
 {% else %}
   <!-- Placeholder for onboarding/preview -->
-  <a href="#" class="trip-card trip-card--placeholder">
-    <div class="trip-card__image">
-      {{ 'product-1' | placeholder_svg_tag: 'trip-card__placeholder' }}
+  <div class="trip-card trip-card--placeholder">
+    <div class="trip-card__image-wrapper">
+      <span class="trip-card__badge">-20%</span>
+      <div class="trip-card__image-link">
+        <div class="trip-card__image">
+          {{ 'product-1' | placeholder_svg_tag: 'trip-card__placeholder' }}
+        </div>
+      </div>
     </div>
     <div class="trip-card__content">
       <h3 class="trip-card__title">Tour Name</h3>
-      <p class="trip-card__type">E-MTB</p>
-      <p class="trip-card__meta">
-        <span class="trip-card__location">Location</span>
-        <span class="trip-card__duration">7 days / 6 nights</span>
-      </p>
-      <p class="trip-card__description">A brief description of this amazing trip experience.</p>
+      <div class="trip-card__price">
+        <span class="trip-card__price-current">$1,200</span>
+        <s class="trip-card__price-compare">$1,500</s>
+      </div>
+      <div class="trip-card__meta">
+        <div class="trip-card__meta-left">
+          <span class="trip-card__location">Location</span>
+        </div>
+        <div class="trip-card__meta-right">
+          <span class="trip-card__duration">7 days / 6 nights</span>
+        </div>
+      </div>
+      <div class="trip-card__options">
+        <div class="trip-card__quantity">
+          <button type="button" class="trip-card__qty-btn">−</button>
+          <input type="number" value="1" min="1" class="trip-card__qty-input">
+          <button type="button" class="trip-card__qty-btn">+</button>
+        </div>
+      </div>
     </div>
-  </a>
+  </div>
 {% endif %}
+
+<style>
+  /* Card sizing fixes for consistent grid display */
+  .trip-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .trip-card__image-wrapper {
+    flex-shrink: 0;
+  }
+
+  .trip-card__content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .trip-card__title {
+    /* Fixed height with line-clamp for consistent sizing */
+    min-height: 2.6em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .trip-card__options {
+    margin-top: auto;
+  }
+</style>
