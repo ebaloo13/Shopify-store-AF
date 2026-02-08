@@ -1,124 +1,177 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "custom-trips-hero",
       "settings": {
+        "min_height": 200,
+        "min_height_mobile": 200,
+        "overlay_color": "#000000",
+        "overlay_opacity": 95,
         "heading": "Design Your Dream MTB Trip",
         "subheading": "From single-day events to multi-week adventures — we build the ride of your life.",
-        "button_label": "Start Planning",
-        "overlay_color": "#000000",
-        "overlay_opacity": 40,
         "text_alignment": "center",
         "text_color": "#ffffff",
-        "min_height": 500,
-        "min_height_mobile": 400,
+        "button_label": "Start Planning",
+        "button_link": "",
+        "color_scheme": "",
         "padding_top": 0,
         "padding_bottom": 0
       }
     },
-    "paths": {
-      "type": "custom-trips-paths",
-      "settings": {
-        "heading": "How Would You Like to Start?",
-        "card_a_title": "Build from Scratch",
-        "card_a_description": "Choose your events, destinations, and dates. We'll craft a fully custom trip around your group.",
-        "card_a_button_label": "Start Building",
-        "card_b_title": "Customize a Package",
-        "card_b_description": "Take one of our existing packages and make it yours — extend, shorten, swap destinations, or add extras.",
-        "card_b_button_label": "Choose a Package",
-        "padding_top": 48,
-        "padding_bottom": 48
-      }
-    },
     "form": {
       "type": "custom-trips-form",
+      "blocks": {
+        "event_1": {
+          "type": "event",
+          "settings": {
+            "name": "Red Bull Valparaíso Cerro Abajo",
+            "date_hint": "February"
+          }
+        },
+        "event_2": {
+          "type": "event",
+          "settings": {
+            "name": "Todo o Nada Pyt's Park",
+            "date_hint": "January"
+          }
+        },
+        "event_3": {
+          "type": "event",
+          "settings": {
+            "name": "Rocafest Roca Park",
+            "date_hint": "January"
+          }
+        },
+        "dest_1": {
+          "type": "destination",
+          "settings": {
+            "name": "Atacama Desert",
+            "region": "North of Chile"
+          }
+        },
+        "dest_2": {
+          "type": "destination",
+          "settings": {
+            "name": "Santiago & Central Valley",
+            "region": ""
+          }
+        },
+        "dest_3": {
+          "type": "destination",
+          "settings": {
+            "name": "Volcanic lakes district and Patagonia",
+            "region": "South of Chile"
+          }
+        },
+        "pkg_1": {
+          "type": "package",
+          "settings": {
+            "name": "Whistler Enduro Week",
+            "description": "7 days / 6 nights",
+            "price_hint": "From $2,400"
+          }
+        },
+        "pkg_2": {
+          "type": "package",
+          "settings": {
+            "name": "Alps Traverse",
+            "description": "10 days / 9 nights",
+            "price_hint": "From $3,800"
+          }
+        },
+        "pkg_3": {
+          "type": "package",
+          "settings": {
+            "name": "Moab Desert Ride",
+            "description": "5 days / 4 nights",
+            "price_hint": "From $1,600"
+          }
+        },
+        "extra_1": {
+          "type": "extra",
+          "settings": {
+            "name": "Bike Rental",
+            "description": "Full-suspension enduro bike and e-bikes"
+          }
+        },
+        "extra_2": {
+          "type": "extra",
+          "settings": {
+            "name": "Guided Park Day",
+            "description": "Full-day with certified guide"
+          }
+        },
+        "extra_3": {
+          "type": "extra",
+          "settings": {
+            "name": "Kids MTB School Day",
+            "description": "Half-day skills clinic"
+          }
+        },
+        "extra_4": {
+          "type": "extra",
+          "settings": {
+            "name": "Lodging Upgrade",
+            "description": "Premium hotel or cabin"
+          }
+        },
+        "extra_5": {
+          "type": "extra",
+          "settings": {
+            "name": "Airport Transfer",
+            "description": "Round-trip shuttle"
+          }
+        },
+        "extra_6": {
+          "type": "extra",
+          "settings": {
+            "name": "Photography Package",
+            "description": "Pro photos of your rides"
+          }
+        }
+      },
+      "block_order": [
+        "event_1",
+        "event_2",
+        "event_3",
+        "dest_1",
+        "dest_2",
+        "dest_3",
+        "pkg_1",
+        "pkg_2",
+        "pkg_3",
+        "extra_1",
+        "extra_2",
+        "extra_3",
+        "extra_4",
+        "extra_5",
+        "extra_6"
+      ],
       "settings": {
         "heading": "Tell Us About Your Dream Trip",
         "description": "Fill out the details below and we'll get back to you with a custom proposal within 48 hours.",
         "submit_label": "Send My Request",
         "success_message": "Thanks! We'll be in touch within 24 hours.",
+        "packages_collection": "packages",
         "scratch_label": "Build from Scratch",
         "customize_label": "Customize a Package",
+        "color_scheme": "scheme-3",
         "accent_color": "#2563eb",
         "padding_top": 48,
         "padding_bottom": 48
-      },
-      "blocks": {
-        "event_1": {
-          "type": "event",
-          "settings": { "name": "Enduro World Series", "date_hint": "Multiple dates" }
-        },
-        "event_2": {
-          "type": "event",
-          "settings": { "name": "Red Bull Rampage", "date_hint": "October 2026" }
-        },
-        "event_3": {
-          "type": "event",
-          "settings": { "name": "Crankworx Whistler", "date_hint": "August 2026" }
-        },
-        "dest_1": {
-          "type": "destination",
-          "settings": { "name": "Whistler, BC", "region": "North America" }
-        },
-        "dest_2": {
-          "type": "destination",
-          "settings": { "name": "Moab, UT", "region": "North America" }
-        },
-        "dest_3": {
-          "type": "destination",
-          "settings": { "name": "Finale Ligure", "region": "Europe" }
-        },
-        "pkg_1": {
-          "type": "package",
-          "settings": { "name": "Whistler Enduro Week", "description": "7 days / 6 nights", "price_hint": "From $2,400" }
-        },
-        "pkg_2": {
-          "type": "package",
-          "settings": { "name": "Alps Traverse", "description": "10 days / 9 nights", "price_hint": "From $3,800" }
-        },
-        "pkg_3": {
-          "type": "package",
-          "settings": { "name": "Moab Desert Ride", "description": "5 days / 4 nights", "price_hint": "From $1,600" }
-        },
-        "extra_1": {
-          "type": "extra",
-          "settings": { "name": "Bike Rental", "description": "Full-suspension enduro bike" }
-        },
-        "extra_2": {
-          "type": "extra",
-          "settings": { "name": "Guided Park Day", "description": "Full-day with certified guide" }
-        },
-        "extra_3": {
-          "type": "extra",
-          "settings": { "name": "Kids MTB School Day", "description": "Half-day skills clinic" }
-        },
-        "extra_4": {
-          "type": "extra",
-          "settings": { "name": "Lodging Upgrade", "description": "Premium hotel or cabin" }
-        },
-        "extra_5": {
-          "type": "extra",
-          "settings": { "name": "Airport Transfer", "description": "Round-trip shuttle" }
-        },
-        "extra_6": {
-          "type": "extra",
-          "settings": { "name": "Photography Package", "description": "Pro photos of your rides" }
-        }
-      },
-      "block_order": [
-        "event_1", "event_2", "event_3",
-        "dest_1", "dest_2", "dest_3",
-        "pkg_1", "pkg_2", "pkg_3",
-        "extra_1", "extra_2", "extra_3", "extra_4", "extra_5", "extra_6"
-      ]
+      }
     },
     "faq": {
       "type": "custom-trips-faq",
-      "settings": {
-        "heading": "Frequently Asked Questions",
-        "padding_top": 48,
-        "padding_bottom": 48
-      },
       "blocks": {
         "faq_1": {
           "type": "faq",
@@ -150,26 +203,43 @@
         },
         "badge_1": {
           "type": "trust_badge",
-          "settings": { "text": "100% Customizable" }
+          "settings": {
+            "text": "100% Customizable"
+          }
         },
         "badge_2": {
           "type": "trust_badge",
-          "settings": { "text": "Expert Local Guides" }
+          "settings": {
+            "text": "Expert Local Guides"
+          }
         },
         "badge_3": {
           "type": "trust_badge",
-          "settings": { "text": "Flexible Cancellation" }
+          "settings": {
+            "text": "Flexible Cancellation"
+          }
         }
       },
       "block_order": [
-        "faq_1", "faq_2", "faq_3", "faq_4",
-        "badge_1", "badge_2", "badge_3"
-      ]
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4",
+        "badge_1",
+        "badge_2",
+        "badge_3"
+      ],
+      "settings": {
+        "heading": "Frequently Asked Questions",
+        "subheading": "",
+        "color_scheme": "scheme-5",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
     }
   },
   "order": [
     "hero",
-    "paths",
     "form",
     "faq"
   ]
