@@ -2,7 +2,7 @@
 .env
 # Node.js / npm
 node_modules/
-package-lock.json
+
 
 # Vite build cache
 .vite/
