@@ -110,11 +110,11 @@ jobs:
 
       - name: Deploy theme
         env:
-          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_THEME_TOKEN }}
           SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
         run: |
           shopify theme push \
             --path . \
             --store "$SHOPIFY_FLAG_STORE" \
-            --theme "${{ secrets.SHOPIFY_THEME_ID }}" \
+            --theme "${{ secrets.SHOPIFY_LIVE_THEME_ID }}" \
             --allow-live
