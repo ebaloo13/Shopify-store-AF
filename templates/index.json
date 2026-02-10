@@ -139,7 +139,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<h2>How it works? </h2><h2>What's included?</h2>",
+            "text": "<h2>What's included?</h2>",
             "width": "100%",
             "max_width": "normal",
             "alignment": "center",

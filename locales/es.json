@@ -119,6 +119,7 @@
     "open": "Abrir"
   },
   "content": {
+    "sold_out": "Sold out",
     "reviews": "reseñas",
     "language": "Idioma",
     "localization_region_and_language": "Región e idioma",

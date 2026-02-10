@@ -117,6 +117,7 @@
     "open": "열기"
   },
   "content": {
+    "sold_out": "Sold out",
     "reviews": "리뷰",
     "language": "언어",
     "localization_region_and_language": "지역 및 언어",
