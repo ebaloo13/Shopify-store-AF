@@ -117,6 +117,7 @@
     "open": "Åbn"
   },
   "content": {
+    "sold_out": "Sold out",
     "reviews": "anmeldelser",
     "language": "Sprog",
     "localization_region_and_language": "Område og sprog",

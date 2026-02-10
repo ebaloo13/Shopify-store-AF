@@ -117,6 +117,7 @@
     "open": "Avaa"
   },
   "content": {
+    "sold_out": "Sold out",
     "reviews": "arvostelua",
     "language": "Kieli",
     "localization_region_and_language": "Alue ja kieli",

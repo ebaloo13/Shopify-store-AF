@@ -121,6 +121,7 @@
     "open": "Atidaryti"
   },
   "content": {
+    "sold_out": "Sold out",
     "reviews": "apžvalgos (-ų; -a)",
     "language": "Kalba",
     "localization_region_and_language": "Regionas ir kalba",

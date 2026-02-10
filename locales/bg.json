@@ -117,6 +117,7 @@
     "open": "Отваряне"
   },
   "content": {
+    "sold_out": "Sold out",
     "reviews": "мнения",
     "language": "Език",
     "localization_region_and_language": "Регион и език",
