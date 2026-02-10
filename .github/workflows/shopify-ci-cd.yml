@@ -33,7 +33,7 @@ jobs:
         run: npm run test --if-present
 
       - name: Theme Check (Liquid + schema)
-        run: npm run theme:check --if-present
+        run: npx shopify theme check --path . --fail-level error
 
   deploy_dev:
     name: Deploy to DEV theme (automatic)
