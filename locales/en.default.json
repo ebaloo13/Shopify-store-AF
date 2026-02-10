@@ -149,6 +149,7 @@
     }
   },
   "content": {
+    "sold_out": "Sold out",
     "cancel": "Cancel",
     "discount": "Discount",
     "account_title": "Account",

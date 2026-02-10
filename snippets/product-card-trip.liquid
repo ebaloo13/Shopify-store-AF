@@ -43,6 +43,8 @@
                       {{ product.featured_image | image_url: width: 600 }} 600w,
                       {{ product.featured_image | image_url: width: 800 }} 800w"
               sizes="(max-width: 749px) 100vw, 33vw"
+              width="{{ product.featured_image.width }}"
+              height="{{ product.featured_image.height }}"
               alt="{{ product.title | escape }}"
               loading="lazy"
               class="trip-card__img"
