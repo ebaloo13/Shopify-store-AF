@@ -62,7 +62,7 @@ jobs:
 
       - name: Deploy to DEV theme
         env:
-          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_THEME_TOKEN }}
           SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
         run: |
           shopify theme push \
@@ -99,11 +99,11 @@ jobs:
 
       - name: Deploy to LIVE theme
         env:
-          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_THEME_TOKEN }}
           SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
         run: |
           shopify theme push \
             --store="$SHOPIFY_FLAG_STORE" \
-            --theme="${{ secrets.SHOPIFY_PROD_THEME_ID }}" \
+            --theme="${{ secrets.SHOPIFY_LIVE_THEME_ID }}" \
             --live \
             --json
