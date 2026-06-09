@@ -1,0 +1,305 @@
+{% doc %}
+  @prompt
+    In the Custom Trips form page, when a user selects the "Other" option from the event type selector, dynamically show two additional input fields: one text field for the event name and one date picker field for the tentative date of the event. These fields should be hidden by default and only appear when "Other" is selected, using JavaScript to handle the show/hide logic. The fields should match the existing form's styling.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-dynamic-form-fields-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+  }
+
+  .ai-dynamic-fields-container-{{ ai_gen_id }} {
+    display: none;
+    margin-top: 20px;
+    gap: 20px;
+    flex-direction: column;
+  }
+
+  .ai-dynamic-fields-container-{{ ai_gen_id }}.active {
+    display: flex;
+  }
+
+  .ai-form-field-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-form-label-{{ ai_gen_id }} {
+    font-size: 14px;
+    font-weight: 500;
+    color: {{ block.settings.label_color }};
+  }
+
+  .ai-form-input-{{ ai_gen_id }} {
+    padding: 12px 16px;
+    border: {{ block.settings.input_border_width }}px solid {{ block.settings.input_border_color }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    background-color: {{ block.settings.input_background }};
+    color: {{ block.settings.input_text_color }};
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .ai-form-input-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.input_hover_background }};
+  }
+
+  .ai-form-input-{{ ai_gen_id }}:focus {
+    outline: none;
+    border-color: {{ block.settings.input_focus_border_color }};
+    background-color: {{ block.settings.input_background }};
+  }
+
+  .ai-form-input-{{ ai_gen_id }}::placeholder {
+    color: {{ block.settings.placeholder_color }};
+    opacity: 0.6;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-dynamic-fields-container-{{ ai_gen_id }} {
+      margin-top: 16px;
+      gap: 16px;
+    }
+  }
+{% endstyle %}
+
+<dynamic-form-fields-{{ ai_gen_id }}
+  class="ai-dynamic-form-fields-{{ ai_gen_id }}"
+  data-trigger-selector="{{ block.settings.trigger_selector }}"
+  data-trigger-value="{{ block.settings.trigger_value }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-dynamic-fields-container-{{ ai_gen_id }}">
+    <div class="ai-form-field-{{ ai_gen_id }}">
+      <label for="event-name-{{ ai_gen_id }}" class="ai-form-label-{{ ai_gen_id }}">
+        {{ block.settings.event_name_label }}
+      </label>
+      <input
+        type="text"
+        id="event-name-{{ ai_gen_id }}"
+        name="{{ block.settings.event_name_field_name }}"
+        class="ai-form-input-{{ ai_gen_id }}"
+        placeholder="{{ block.settings.event_name_placeholder }}"
+      >
+    </div>
+
+    <div class="ai-form-field-{{ ai_gen_id }}">
+      <label for="event-date-{{ ai_gen_id }}" class="ai-form-label-{{ ai_gen_id }}">
+        {{ block.settings.event_date_label }}
+      </label>
+      <input
+        type="text"
+        id="event-date-{{ ai_gen_id }}"
+        name="{{ block.settings.event_date_field_name }}"
+        class="ai-form-input-{{ ai_gen_id }}"
+        placeholder="{{ block.settings.event_date_placeholder }}"
+      >
+    </div>
+  </div>
+</dynamic-form-fields-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class DynamicFormFields{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.triggerSelector = this.dataset.triggerSelector;
+        this.triggerValue = this.dataset.triggerValue;
+        this.container = this.querySelector('.ai-dynamic-fields-container-{{ ai_gen_id }}');
+        this.inputs = this.querySelectorAll('.ai-form-input-{{ ai_gen_id }}');
+      }
+
+      connectedCallback() {
+        this.setupEventListeners();
+        this.checkInitialState();
+      }
+
+      setupEventListeners() {
+        const triggerElement = document.querySelector(this.triggerSelector);
+        
+        if (!triggerElement) {
+          console.warn('Trigger element not found:', this.triggerSelector);
+          return;
+        }
+
+        triggerElement.addEventListener('change', () => {
+          this.toggleFields(triggerElement);
+        });
+      }
+
+      checkInitialState() {
+        const triggerElement = document.querySelector(this.triggerSelector);
+        if (triggerElement) {
+          this.toggleFields(triggerElement);
+        }
+      }
+
+      toggleFields(triggerElement) {
+        const selectedValue = triggerElement.value;
+        const shouldShow = selectedValue === this.triggerValue;
+
+        if (shouldShow) {
+          this.container.classList.add('active');
+          this.inputs.forEach(input => {
+            input.setAttribute('required', 'required');
+          });
+        } else {
+          this.container.classList.remove('active');
+          this.inputs.forEach(input => {
+            input.removeAttribute('required');
+            input.value = '';
+          });
+        }
+      }
+    }
+
+    customElements.define('dynamic-form-fields-{{ ai_gen_id }}', DynamicFormFields{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Dynamic form fields",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Trigger settings"
+    },
+    {
+      "type": "text",
+      "id": "trigger_selector",
+      "label": "Trigger element selector",
+      "default": "#event-type",
+      "info": "CSS selector for the dropdown that triggers the fields (e.g., #event-type or [name='event_type'])"
+    },
+    {
+      "type": "text",
+      "id": "trigger_value",
+      "label": "Trigger value",
+      "default": "Other",
+      "info": "The value that triggers the fields to show"
+    },
+    {
+      "type": "header",
+      "content": "Event name field"
+    },
+    {
+      "type": "text",
+      "id": "event_name_label",
+      "label": "Label",
+      "default": "Event name"
+    },
+    {
+      "type": "text",
+      "id": "event_name_placeholder",
+      "label": "Placeholder",
+      "default": "Enter event name"
+    },
+    {
+      "type": "text",
+      "id": "event_name_field_name",
+      "label": "Field name",
+      "default": "contact[event_name]",
+      "info": "The name attribute for form submission"
+    },
+    {
+      "type": "header",
+      "content": "Event date field"
+    },
+    {
+      "type": "text",
+      "id": "event_date_label",
+      "label": "Label",
+      "default": "Tentative date"
+    },
+    {
+      "type": "text",
+      "id": "event_date_placeholder",
+      "label": "Placeholder",
+      "default": "MM/DD/YYYY"
+    },
+    {
+      "type": "text",
+      "id": "event_date_field_name",
+      "label": "Field name",
+      "default": "contact[event_date]",
+      "info": "The name attribute for form submission"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "input_background",
+      "label": "Input background",
+      "default": "#ffffffc7"
+    },
+    {
+      "type": "color",
+      "id": "input_text_color",
+      "label": "Input text color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Input border color",
+      "default": "#dfdfdf"
+    },
+    {
+      "type": "color",
+      "id": "input_focus_border_color",
+      "label": "Input focus border color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "input_hover_background",
+      "label": "Input hover background",
+      "default": "#00000003"
+    },
+    {
+      "type": "color",
+      "id": "placeholder_color",
+      "label": "Placeholder color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "input_border_width",
+      "label": "Input border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "label": "Input border radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dynamic form fields"
+    }
+  ]
+}
+{% endschema %}
