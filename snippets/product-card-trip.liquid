@@ -45,6 +45,8 @@
               sizes="(max-width: 749px) 100vw, 33vw"
               alt="{{ product.title | escape }}"
               loading="lazy"
+              width="800"
+              height="600"
               class="trip-card__img"
               style="display: block; width: 100%; height: 100%; object-fit: cover;"
             >
@@ -140,7 +142,7 @@
                     {% if product_variant == variant %}selected{% endif %}
                     {% unless product_variant.available %}disabled{% endunless %}
                   >
-                    {{ product_variant.title }}{% unless product_variant.available %} - {{ 'content.sold_out' | t | default: 'Sold out' }}{% endunless %}
+                    {{ product_variant.title }}{% unless product_variant.available %} - Sold out{% endunless %}
                   </option>
                 {% endfor %}
               </select>
