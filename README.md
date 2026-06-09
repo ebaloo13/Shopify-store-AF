@@ -1,22 +1,91 @@
-# Horizon Theme - Modernized with Vite
+# Andes Freeride
 
-A modernized Shopify Horizon theme using **Parallel Architecture** to integrate modern build tooling without breaking legacy functionality.
+Shopify storefront and digital platform for Andes Freeride, a mountain bike travel company focused on bringing riders from Canada and North America to Chile.
 
-## Table of Contents
+The project combines Shopify, modern frontend tooling, CI/CD automation, and future booking workflows to create a scalable platform for MTB tourism experiences.
 
-- [Project Architecture](#project-architecture)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Development Workflow](#development-workflow)
-- [CI/CD Pipeline](#cicd-pipeline)
-- [Project Structure](#project-structure)
-- [Configuration Files](#configuration-files)
+## Business Overview
+
+Andes Freeride currently offers curated mountain bike travel experiences in Chile.
+
+Current offerings:
+- Nevados de Chillán MTB Package
+- Roca Park MTB Package
+
+The website serves as:
+- Marketing website
+- Lead generation platform
+- Travel package showcase
+- Future booking platform
+- Customer acquisition funnel
+
+## Problem
+
+Mountain bike travelers often discover destinations, guides, accommodations, and riding experiences through fragmented channels such as social media, forums, word of mouth, and direct messaging.
+
+This creates friction for riders trying to evaluate destinations and for operators trying to convert interest into bookings.
+
+For Chile in particular, there is no dominant digital platform focused specifically on curated MTB travel experiences for international riders.
+
+## Solution
+
+Andes Freeride is being built as a dedicated MTB travel platform focused on showcasing premium riding experiences in Chile.
+
+The long-term goal is to provide a seamless path from discovery to booking while helping riders understand destinations, packages, logistics, accommodations, and riding options.
+
+The platform is designed to evolve through multiple phases:
+
+1. Marketing and lead generation
+2. Package discovery and qualification
+3. Booking coordination workflows
+4. Customer management and repeat business
+5. Operational automation and analytics
+
+## Project Status
+
+### Completed
+- Shopify store setup
+- Horizon theme foundation
+- Vite integration
+- GitHub repository setup
+- Automated CI/CD deployment to Shopify
+- Theme Check validation pipeline
+- Automated build and test workflow
+
+### In Progress
+- Homepage customization
+- Package landing pages
+- Lead capture workflows
+- Content architecture for MTB travel packages
+
+### Planned
+- Booking workflow
+- Customer profile system
+- CRM integration
+- Analytics and conversion tracking
+- Marketing automation
+
+## Product Vision
+
+The objective is not simply to build a Shopify website.
+
+The objective is to create a scalable digital platform that can support:
+
+- MTB travel package sales
+- Customer acquisition
+- Booking management
+- Rider profiles
+- Partner and accommodation coordination
+- Marketing automation
+- Performance analytics
+
+The current Shopify implementation acts as the foundation layer for future platform capabilities.
 
 ---
 
 ## Project Architecture
 
-This project uses a **Parallel Architecture** strategy that allows modern development practices to coexist with the traditional Shopify theme structure.
+This project uses a parallel architecture that allows modern frontend development to coexist with Shopify's native theme structure. The goal is to preserve Shopify compatibility while enabling scalable development practices suitable for a growing travel business.
 
 ### The Two-World Approach
 
@@ -74,19 +143,23 @@ Vite is configured with `emptyOutDir: false` to ensure existing theme assets are
 | **Sass** | 1.x | SCSS preprocessing |
 | **Shopify CLI** | Latest | Local development and deployment |
 
-### Why These Tools?
+## Engineering Decisions
 
-**Lit** was chosen over React/Vue because:
-- True standards-compliant web components (works anywhere)
-- Small footprint (~5KB vs 40KB+ for React)
-- No virtual DOM overhead
-- Works inside Shadow DOM with CSS Custom Properties
+### Why Shopify
 
-**Vite** was chosen because:
-- Lightning-fast HMR during development
-- Native ES modules support
-- Perfect Shopify integration via `vite-plugin-shopify`
-- Handles flat output structure required by Shopify
+Shopify provides a stable ecommerce foundation, excellent hosting, content management capabilities, and a proven ecosystem for future commercial operations.
+
+### Why Vite
+
+Vite provides fast local development, modern build tooling, and an efficient workflow while remaining compatible with Shopify theme requirements.
+
+### Why GitHub Actions
+
+GitHub Actions enables automated validation and deployment workflows, reducing manual deployment risk and improving development reliability.
+
+### Why Parallel Architecture
+
+The project preserves compatibility with Shopify's native architecture while allowing modern frontend development practices to coexist without disrupting existing functionality.
 
 ---
 
@@ -103,7 +176,7 @@ Vite is configured with `emptyOutDir: false` to ensure existing theme assets are
 ```bash
 # Clone the repository
 git clone <your-repo-url>
-cd horizon-test-data
+cd andes-freeride-theme
 
 # Install dependencies
 npm install
@@ -155,68 +228,20 @@ This setup provides:
 - Live preview of your theme in the browser
 - Automatic asset recompilation on save
 
-### Creating New Components
-
-1. Create a new Lit component in `frontend/components/`:
-
-```typescript
-// frontend/components/my-component.ts
-import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-
-@customElement('my-component')
-export class MyComponent extends LitElement {
-  static styles = css`
-    :host {
-      display: block;
-    }
-  `;
-
-  @property({ type: String })
-  message = 'Hello World';
-
-  render() {
-    return html`<p>${this.message}</p>`;
-  }
-}
-```
-
-2. Import it in `frontend/entrypoints/theme.ts`:
-
-```typescript
-import '@components/my-component';
-```
-
-3. Use it in any Liquid template:
-
-```liquid
-<my-component message="Welcome!"></my-component>
-```
-
-### Writing Tests
-
-Create tests in `test/components/`:
-
-```typescript
-// test/components/my-component.test.ts
-import { describe, it, expect } from 'vitest';
-import '../../frontend/components/my-component';
-
-describe('MyComponent', () => {
-  it('should be defined', () => {
-    expect(customElements.get('my-component')).toBeDefined();
-  });
-});
-```
-
-Run tests:
-```bash
-npm run test
-```
-
 ---
 
 ## CI/CD Pipeline
+
+The production deployment flow is fully automated through GitHub Actions.
+
+Workflow:
+
+GitHub Push (main)
+→ Theme Check
+→ Build & Test
+→ Deploy to Shopify Theme
+
+Deployment only occurs when all validation steps pass successfully.
 
 The project includes a GitHub Actions workflow that automates testing and deployment.
 
@@ -277,6 +302,23 @@ Configure these in your repository settings under **Settings > Secrets and varia
 | `SHOPIFY_STORE` | Your store URL (e.g., `my-store.myshopify.com`) | Your Shopify admin URL |
 | `SHOPIFY_THEME_ID` | Target theme ID for deployment | Run `shopify theme list --store your-store.myshopify.com` |
 
+### Deployment Notes
+
+How to find the Theme ID:
+
+
+shopify theme list --store your-store.myshopify.com
+
+
+How to verify deployment:
+
+1. Open GitHub Actions and confirm the workflow completed successfully.
+2. Verify the deployed commit SHA matches the latest commit on main.
+3. Open Shopify Admin → Online Store → Themes.
+4. Confirm the expected changes are visible in the target theme.
+
+If deployment succeeds in GitHub but changes are not visible, verify that the correct Theme ID is configured in the repository secrets.
+
 ### File Exclusions
 
 The `.shopifyignore` file prevents uploading development files to Shopify:
@@ -293,7 +335,7 @@ The `.shopifyignore` file prevents uploading development files to Shopify:
 ## Project Structure
 
 ```
-horizon-test-data/
+andes-freeride-theme/
 ├── assets/                    # Shopify theme assets (legacy + compiled)
 │   ├── *.js                   # Legacy JavaScript (untouched)
 │   ├── *.css                  # Legacy CSS (untouched)
@@ -303,14 +345,14 @@ horizon-test-data/
 │
 ├── frontend/                  # Modern source code
 │   ├── components/            # Lit web components
-│   │   └── product-card.ts    # Example component
+│   │   └── future custom components
 │   └── entrypoints/           # Vite entry points
 │       ├── theme.ts           # JavaScript entry
 │       └── theme.scss         # Styles entry
 │
 ├── test/                      # Unit tests
 │   └── components/
-│       └── product-card.test.ts
+│       └── future test suites
 │
 ├── blocks/                    # Shopify theme blocks
 ├── sections/                  # Shopify Liquid sections
@@ -392,19 +434,71 @@ Ensure both Vite dev server (`npm run dev`) and Shopify CLI (`shopify theme dev`
 
 ---
 
-## Contributing
+## Future Roadmap
 
-1. Create a feature branch from `main`
-2. Make your changes
-3. Write/update tests
-4. Open a Pull Request
-5. Wait for CI checks to pass
-6. Merge after review
+### Phase 1
+- Landing pages
+- Package presentation
+- Lead capture
+- SEO foundation
+
+### Phase 2
+- Booking request workflows
+- Customer qualification process
+- CRM integration
+
+### Phase 3
+- Customer profiles
+- Booking management
+- Analytics dashboards
+- Marketing automation
+
+### Phase 4
+- Advanced operational workflows
+- Partner management
+- Customer lifecycle automation
+
+---
+
+## Technical Challenges Solved
+
+### Modern Tooling on Top of Shopify
+
+Implemented a development architecture that allows modern frontend tooling to coexist with Shopify's native theme system without breaking compatibility.
+
+### Automated Deployments
+
+Implemented a GitHub Actions pipeline that validates, builds, tests, and deploys theme changes automatically.
+
+### Asset Preservation Strategy
+
+Configured the build process to preserve existing Shopify theme assets while safely introducing modern compiled assets.
+
+### Foundation for Future Expansion
+
+Structured the project to support future booking workflows, customer data management, analytics, and operational automation.
+
+---
+
+## Portfolio Highlights
+
+This project demonstrates both product thinking and technical execution across ecommerce, travel, automation, and modern web development.
+
+This project demonstrates:
+
+- Shopify theme development
+- Modern frontend architecture with Vite
+- CI/CD implementation using GitHub Actions
+- Automated deployment workflows
+- Technical documentation practices
+- Ecommerce and tourism product development
+- Scalable architecture planning
+- Integration-ready storefront design
+
+The project is intended to serve both as a production business asset for Andes Freeride and as a portfolio piece demonstrating full-stack product thinking, deployment automation, and Shopify development workflows.
 
 ---
 
 ## License
 
 Based on the [Shopify Horizon Theme](https://github.com/Shopify/horizon).
-#   S h o p i f y - d e v - c u r s  
- 
