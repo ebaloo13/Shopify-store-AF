@@ -1,9 +1,11 @@
 {
-  "name": "horizon-theme",
+  "name": "andes-freeride-theme",
   "version": "1.0.0",
-  "description": "Shopify Horizon theme with Vite + Lit + Vitest",
+  "description": "Custom Shopify storefront for Andes Freeride",
+  "private": true,
   "type": "module",
   "scripts": {
+    "check": "npm run build && npm test && npx --yes @shopify/cli@3.92.1 theme check --path . --fail-level error",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

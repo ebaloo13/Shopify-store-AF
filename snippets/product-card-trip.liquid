@@ -4,10 +4,11 @@
   Renders a product card designed for trip/tour products with a large image,
   hover-reveal add to cart button, and content section below.
 
-  @param {object} product - Product object (required)
+  @param {object} [product] - Product object; renders a placeholder when omitted
+  @param {string} [section_id] - Parent section ID
 
   @example
-    {% render 'product-card-trip', product: product %}
+    {% render 'product-card-trip', product: product, section_id: section.id %}
 {%- enddoc -%}
 
 {% if product != blank %}
@@ -60,7 +61,7 @@
       {% if can_add_to_cart %}
         {% assign product_form_id = 'TripCard-ProductForm-' | append: product.id %}
         <product-form-component
-          data-section-id="{{ section.id }}"
+          data-section-id="{{ section_id }}"
           data-product-id="{{ product.id }}"
           on:submit="/handleSubmit"
           class="trip-card__cart-form"

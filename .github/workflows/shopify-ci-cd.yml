@@ -2,25 +2,28 @@ name: Shopify Theme CI/CD
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
   group: shopify-theme-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Tests + Theme validation
+  validate:
+    name: Build, test, and validate
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -29,23 +32,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests (Vitest)
-        run: npm run test --if-present
+      - name: Run project checks
+        run: npm run check
 
-      - name: Theme Check (Liquid + schema)
-        run: npx shopify theme check --path . --fail-level error
-
-  deploy_dev:
-    name: Deploy to DEV theme (automatic)
-    needs: test
+  deploy-dev:
+    name: Deploy development theme
+    needs: validate
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: development
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -54,13 +55,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build assets (optional)
-        run: npm run build --if-present
+      - name: Build assets
+        run: npm run build
 
       - name: Install Shopify CLI
-        run: npm install -g @shopify/cli@latest
+        run: npm install -g @shopify/cli@3.92.1
 
-      - name: Deploy to DEV theme
+      - name: Deploy development theme
         env:
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_THEME_TOKEN }}
           SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
@@ -71,18 +72,18 @@ jobs:
             --unpublished \
             --json
 
-  deploy_prod:
-    name: Deploy to PROD theme (manual)
-    needs: test
+  deploy-production:
+    name: Deploy production theme
+    needs: validate
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     environment: production
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -91,13 +92,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build assets (optional)
-        run: npm run build --if-present
+      - name: Build assets
+        run: npm run build
 
       - name: Install Shopify CLI
-        run: npm install -g @shopify/cli@latest
+        run: npm install -g @shopify/cli@3.92.1
 
-      - name: Deploy to LIVE theme
+      - name: Deploy production theme
         env:
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_THEME_TOKEN }}
           SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}

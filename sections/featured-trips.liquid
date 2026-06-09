@@ -19,11 +19,11 @@
     <div class="featured-trips__grid">
       {% if collection.products.size > 0 %}
         {% for product in collection.products limit: max_items %}
-          {% render 'product-card-trip', product: product %}
+          {% render 'product-card-trip', product: product, section_id: section.id %}
         {% endfor %}
       {% else %}
         {% for i in (1..max_items) %}
-          {% render 'product-card-trip', product: null %}
+          {% render 'product-card-trip' %}
         {% endfor %}
       {% endif %}
     </div>

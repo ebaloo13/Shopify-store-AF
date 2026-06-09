@@ -1,8 +1,9 @@
 .shopify
-.env
+.env*
+!.env.example
+
 # Node.js / npm
 node_modules/
-
 
 # Vite build cache
 .vite/
@@ -15,6 +16,7 @@ assets/theme.js.map
 assets/theme.css.map
 
 # IDE / Editor
+.cursor/
 .idea/
 *.swp
 *.swo

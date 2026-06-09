@@ -30,6 +30,13 @@ export default defineConfig({
       },
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+      },
+    },
+  },
   // Resolve TypeScript paths
   resolve: {
     alias: {
