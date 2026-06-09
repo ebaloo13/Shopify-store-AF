@@ -162,3 +162,13 @@ No secret values belong in the repository.
 ## Attribution
 
 Based on Shopify's [Horizon theme](https://github.com/Shopify/horizon). Review the upstream project for applicable licensing and attribution requirements.
+
+## License
+
+This project is based on Shopify's Horizon theme.
+
+Horizon is copyright © 2025-present Shopify Inc. and is distributed under the license included in this repository as `LICENSE.md`.
+
+Custom Andes Freeride modifications, sections, templates, documentation, CI/CD configuration, and business-specific functionality were added on top of the Horizon foundation.
+
+This repository is intended as a business storefront and portfolio project, not as a redistributable Shopify theme product.
