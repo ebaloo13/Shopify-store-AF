@@ -99,6 +99,13 @@
             "date_hint": "January"
           }
         },
+        "event_Lw4QnQ": {
+          "type": "event",
+          "settings": {
+            "name": "Other{{ section.settings.packages_collection.metafields.custom.event_name.value }}",
+            "date_hint": ""
+          }
+        },
         "dest_1": {
           "type": "destination",
           "settings": {
@@ -191,6 +198,7 @@
         "event_1",
         "event_2",
         "event_3",
+        "event_Lw4QnQ",
         "dest_1",
         "dest_2",
         "dest_3",
@@ -284,12 +292,71 @@
         "padding_top": 48,
         "padding_bottom": 48
       }
+    },
+    "1777753065e83275cd": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_7571301_Hw9KFL": {
+          "type": "ai_gen_block_7571301",
+          "settings": {
+            "trigger_selector": "#event-type",
+            "trigger_value": "Other",
+            "event_name_label": "Event name",
+            "event_name_placeholder": "Enter event name",
+            "event_name_field_name": "contact[event_name]",
+            "event_date_label": "Tentative date",
+            "event_date_placeholder": "MM/DD/YYYY",
+            "event_date_field_name": "contact[event_date]",
+            "label_color": "#000000",
+            "input_background": "#ffffffc7",
+            "input_text_color": "#333333",
+            "input_border_color": "#dfdfdf",
+            "input_focus_border_color": "#000000",
+            "input_hover_background": "#00000003",
+            "placeholder_color": "#000000",
+            "input_border_width": 1,
+            "input_border_radius": 4
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_7571301_Hw9KFL"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
     }
   },
   "order": [
     "main",
     "hero",
     "form",
-    "faq"
+    "faq",
+    "1777753065e83275cd"
   ]
 }
